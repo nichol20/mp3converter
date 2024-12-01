@@ -26,6 +26,8 @@ def start(message, fs_videos, fs_mp3s, channel):
     f.close()
     os.remove(tf_path)
 
+    message["mp3_fid"] = str(fid)
+
     try:
         channel.basic_publish(
             exchange="",

@@ -28,6 +28,8 @@ def start(message, fs_videos, fs_mp3s, channel):
 
     message["mp3_fid"] = str(fid)
 
+    channel.queue_declare(queue=os.environ.get("MP3_QUEUE"))
+    
     try:
         channel.basic_publish(
             exchange="",
@@ -38,5 +40,6 @@ def start(message, fs_videos, fs_mp3s, channel):
             )
         )
     except Exception as err:
+        print(err)
         fs_mp3s.delete(fid)
         return "failed to publish message"

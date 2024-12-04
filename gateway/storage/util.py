@@ -1,4 +1,4 @@
-import pika, json
+import pika, json, os
 
 import pika.spec
 
@@ -15,10 +15,12 @@ def upload(f, fs, channel, access):
         "username": access["username"],
     }
 
+    channel.queue_declare(queue=os.environ.get("VIDEO_QUEUE"))
+
     try:
         channel.basic_publish(
             exchange="",
-            routing_key="video",
+            routing_key=os.environ.get("VIDEO_QUEUE"),
             body=json.dumps(message),
             properties=pika.BasicProperties(
                 delivery_mode=pika.spec.PERSISTENT_DELIVERY_MODE

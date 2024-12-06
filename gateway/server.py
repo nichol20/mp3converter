@@ -2,7 +2,7 @@ import gridfs, pika, json
 from flask import Flask, request, send_file
 from flask_pymongo import PyMongo
 from auth import validate
-from auth_svc import access
+from auth_svc import access, user
 from storage import util
 from bson.objectid import ObjectId
 
@@ -15,7 +15,15 @@ fs_videos = gridfs.GridFS(mongo_video.db)
 fs_mp3s = gridfs.GridFS(mongo_mp3.db)
 
 connection = pika.BlockingConnection(pika.ConnectionParameters("rabbitmq"))
-channel = connection.channel()
+# channel = connection.channel()
+
+@server.route("/user", methods=["POST"])
+def create_user():
+    err = user.create(request)
+    if err:
+        return err
+    return "user created!", 201
+
 
 @server.route("/login", methods=["POST"])
 def login():

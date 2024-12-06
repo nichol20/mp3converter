@@ -12,6 +12,33 @@ server.config["MYSQL_PASSWORD"] = os.environ.get("MYSQL_PASSWORD")
 server.config["MYSQL_DB"] = os.environ.get("MYSQL_DB")
 server.config["MYSQL_PORT"] = int(os.environ.get("MYSQL_PORT"))
 
+@server.route("/user", methods=["POST"])
+def create_user():
+    body = request.get_json()
+    if not body:
+        return "missing fields", 400
+
+    if not body.get('email') or not body.get('password'):
+        return "email and password are required", 400
+
+    cur = mysql.connection.cursor()
+
+    try:
+        cur.execute("SELECT EXISTS(SELECT 1 FROM user where email=%s)", (body['email'], ))  
+        user_exists = cur.fetchone()[0]
+        if user_exists:
+            return "email already exists", 409
+
+        res = cur.execute("INSERT INTO user (email, password) VALUES (%s, %s)", (body['email'], body['password']))
+        if res > 0:
+            mysql.connection.commit()
+            return "", 201  
+        else:
+            return "insert failed", 500
+    except Exception as err:
+        print(err)
+        return "internal server error", 500
+
 @server.route("/login", methods=["POST"])
 def login():
     auth = request.authorization
@@ -20,9 +47,7 @@ def login():
     
     # check db for username and password
     cur = mysql.connection.cursor()
-    res = cur.execute(
-        "SELECT email, password FROM user WHERE email=%s", (auth.username, )
-    )
+    res = cur.execute("SELECT email, password FROM user WHERE email=%s", (auth.username, ))
 
     if res > 0:
         user_row = cur.fetchone()

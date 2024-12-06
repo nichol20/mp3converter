@@ -15,7 +15,7 @@ fs_videos = gridfs.GridFS(mongo_video.db)
 fs_mp3s = gridfs.GridFS(mongo_mp3.db)
 
 connection = pika.BlockingConnection(pika.ConnectionParameters("rabbitmq"))
-# channel = connection.channel()
+channel = connection.channel()
 
 @server.route("/user", methods=["POST"])
 def create_user():

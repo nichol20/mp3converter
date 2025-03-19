@@ -31,7 +31,7 @@ find . -type d -name manifests -exec kubectl apply -f {} \;
 
 ## How to test
 
-**Before continuing, if you want to receive the IP address of the file to download by email, you will need to configure a few things.**
+**Before continuing, If you want to receive the file ID for download via email, you will need to configure a few things.**
 
 1 - You need to have an email address and a password to serve as the sender for the notification service.
 - One way is through the Google account application password manager: [apppassword](https://myaccount.google.com/u/1/apppasswords)
